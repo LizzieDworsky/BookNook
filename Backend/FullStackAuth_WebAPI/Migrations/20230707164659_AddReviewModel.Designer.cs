@@ -3,6 +3,7 @@ using System;
 using FullStackAuth_WebAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FullStackAuth_WebAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230707164659_AddReviewModel")]
+    partial class AddReviewModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,56 +47,6 @@ namespace FullStackAuth_WebAPI.Migrations
                     b.HasIndex("OwnerId");
 
                     b.ToTable("Cars");
-                });
-
-            modelBuilder.Entity("FullStackAuth_WebAPI.Models.Favorite", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("BookId")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("ThumbnailUrl")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("varchar(255)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Favorites");
-                });
-
-            modelBuilder.Entity("FullStackAuth_WebAPI.Models.Review", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("BookId")
-                        .HasColumnType("longtext");
-
-                    b.Property<double>("Rating")
-                        .HasColumnType("double");
-
-                    b.Property<string>("Text")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("varchar(255)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("FullStackAuth_WebAPI.Models.User", b =>
@@ -194,13 +147,13 @@ namespace FullStackAuth_WebAPI.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "2279dfe8-5a32-4d4a-83cd-adf645a07293",
+                            Id = "df2a78d6-0895-40cc-9600-526d16e14e77",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "67859e4c-d4c4-4058-9012-52b375b16544",
+                            Id = "caf10230-6351-4ea5-9795-c140713c8e1c",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -315,24 +268,6 @@ namespace FullStackAuth_WebAPI.Migrations
                         .HasForeignKey("OwnerId");
 
                     b.Navigation("Owner");
-                });
-
-            modelBuilder.Entity("FullStackAuth_WebAPI.Models.Favorite", b =>
-                {
-                    b.HasOne("FullStackAuth_WebAPI.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("FullStackAuth_WebAPI.Models.Review", b =>
-                {
-                    b.HasOne("FullStackAuth_WebAPI.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
