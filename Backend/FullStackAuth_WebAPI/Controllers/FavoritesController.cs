@@ -72,19 +72,28 @@ namespace FullStackAuth_WebAPI.Controllers
         }
 
         /// <summary>
-        /// Testing only endpoint. Deletes specified favorite by pk.
+        /// Deletes specified favorite by pk.
         /// </summary>
         /// <param name="id">Primary Key of Favorite</param>
-        /// <returns>Returns NoContent if the favorite was deleted, NotFound if the favorite was not found</returns>
-        [HttpDelete("{id}")]
+        /// <returns>
+        /// Returns NoContent if the favorite was deleted, NotFound if the favorite was not found, 
+        /// Unauthorized if the user is not authenticated or if the favorite does not belong to the authenticated user.
+        /// </returns>
+        [HttpDelete("{id}"), Authorize]
         public IActionResult Delete(int id)
         {
-            var review = _context.Favorites.Where(f => f.Id == id).SingleOrDefault();
-            if (review == null)
+            var favorite = _context.Favorites.Where(f => f.Id == id).SingleOrDefault();
+            if (favorite == null)
             {
                 return NotFound();
             }
-            _context.Favorites.Remove(review);
+            string userId = User.FindFirstValue("id");
+            if (string.IsNullOrEmpty(userId) || favorite.UserId != userId)
+            {
+                return Unauthorized();
+            }
+
+            _context.Favorites.Remove(favorite);
             _context.SaveChanges();
             return NoContent();
         }
