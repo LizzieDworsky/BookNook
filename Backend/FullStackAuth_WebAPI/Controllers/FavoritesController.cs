@@ -1,4 +1,5 @@
 ﻿using FullStackAuth_WebAPI.Data;
+using FullStackAuth_WebAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -18,7 +19,6 @@ namespace FullStackAuth_WebAPI.Controllers
             _context = context;
         }
 
-        //GET api/<FavoritesController>
         /// <summary>
         /// Retrieves all favorites of the currently authenticated user.
         /// </summary>
@@ -35,13 +35,42 @@ namespace FullStackAuth_WebAPI.Controllers
             return Ok(favorites);
         }
 
-        // POST api/<FavoritesController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        /// <summary>
+        /// Creates a new favorite for the currently authenticated user.
+        /// </summary>
+        /// <param name="newFavorite">The favorite to create.</param>
+        /// <returns>
+        /// The created favorite with a 201 status code if the operation is successful,
+        /// BadRequest with ModelState if the model is not valid,
+        /// Unauthorized if the user's id is not found,
+        /// or a 500 status code with exception details if a server error occurred.
+        /// </returns>
+        [HttpPost, Authorize]
+        public IActionResult Post([FromBody] Favorite newFavorite)
         {
+            try
+            {
+                string userId = User.FindFirstValue("id");
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized();
+                }
+                newFavorite.UserId = userId;
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                _context.Favorites.Add(newFavorite);
+                _context.SaveChanges();
+                return StatusCode(201, newFavorite);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+            
         }
 
-        // DELETE api/<FavoritesController>/5
         /// <summary>
         /// Testing only endpoint. Deletes specified favorite by pk.
         /// </summary>
