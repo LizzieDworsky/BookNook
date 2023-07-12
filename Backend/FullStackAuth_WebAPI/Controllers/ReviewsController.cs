@@ -19,20 +19,6 @@ namespace FullStackAuth_WebAPI.Controllers
             _context = context;
         }
 
-        // GET: api/<ReviewsController>
-        /// <summary>
-        /// Testing only endpoint. Retrieves all reviews.
-        /// </summary>
-        /// <returns>A list of all reviews or empty list if there are no reviews.</returns>
-        [HttpGet]
-        public IActionResult Get()
-        {
-            var reviews = _context.Reviews.ToList();
-            return Ok(reviews);
-        }
-
-
-        // POST api/<ReviewsController>
         /// <summary>
         /// Creates a new review.
         /// </summary>
@@ -66,6 +52,40 @@ namespace FullStackAuth_WebAPI.Controllers
             {
                 return StatusCode(500, ex.Message);
             }
+        }
+
+        /// <summary>
+        /// Updates the specified review by the given id.
+        /// </summary>
+        /// <param name="id">The unique identifier of the review to update.</param>
+        /// <param name="updateReview">The updated review data.</param>
+        /// <returns>
+        /// Returns Ok with the updated review if the update was successful,
+        /// NotFound if the review was not found, BadRequest if the model is invalid,
+        /// Unauthorized if the user is not authenticated or if the review does not belong to the authenticated user.
+        /// </returns>
+        [HttpPut("{id}"), Authorize]
+        public IActionResult Put(int id, [FromBody] Review updateReview)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var review = _context.Reviews.Where(r => r.Id == id).FirstOrDefault();
+            if (review == null)
+            {
+                return NotFound();
+            }
+            string userId = User.FindFirstValue("id");
+            if (string.IsNullOrEmpty(userId) || review.UserId != userId)
+            {
+                return Unauthorized();
+            }
+            review.Text = updateReview.Text;
+            review.Rating = updateReview.Rating;
+            _context.Reviews.Update(review);
+            _context.SaveChanges();
+            return Ok(review);
         }
 
         /// <summary>
