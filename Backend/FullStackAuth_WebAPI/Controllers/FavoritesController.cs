@@ -1,4 +1,5 @@
 ﻿using FullStackAuth_WebAPI.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -16,15 +17,20 @@ namespace FullStackAuth_WebAPI.Controllers
             _context = context;
         }
 
-        // GET: api/<FavoritesController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        // GET: api/<FavoritesController>/all
+        /// <summary>
+        /// Testing only endpoint. Retrieves all favorites.
+        /// </summary>
+        /// <returns>A list of all favorites or empty list if there are no favorites.</returns>
+        [HttpGet("{all}")]
+        public IActionResult Get()
         {
-            return new string[] { "value1", "value2" };
+            var favorites = _context.Favorites.ToList();
+            return Ok(favorites);
         }
 
-        // GET api/<FavoritesController>/5
-        [HttpGet("{id}")]
+        //GET api/<FavoritesController>
+        [HttpGet, Authorize]
         public string Get(int id)
         {
             return "value";
