@@ -69,17 +69,25 @@ namespace FullStackAuth_WebAPI.Controllers
         }
 
         /// <summary>
-        /// Testing only endpoint. Deletes specified review by pk.
+        /// Deletes specified review by pk.
         /// </summary>
         /// <param name="id">Primary Key of Review</param>
-        /// <returns>Returns NoContent if the review was deleted, NotFound if the review was not found</returns>
-        [HttpDelete("{id}")]
+        /// <returns>
+        /// Returns NoContent if the review was deleted, NotFound if the review was not found,
+        /// Unauthorized if the user is not authenticated or if the review does not belong to the authenticated user.
+        /// </returns>
+        [HttpDelete("{id}"), Authorize]
         public IActionResult Delete(int id)
         {
             var review = _context.Reviews.Where(r => r.Id == id).SingleOrDefault();
             if (review == null)
             {
                 return NotFound();
+            }
+            string userId = User.FindFirstValue("id");
+            if (string.IsNullOrEmpty(userId) || review.UserId != userId)
+            {
+                return Unauthorized();
             }
             _context.Reviews.Remove(review);
             _context.SaveChanges();
