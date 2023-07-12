@@ -18,18 +18,6 @@ namespace FullStackAuth_WebAPI.Controllers
             _context = context;
         }
 
-        // GET: api/<FavoritesController>/all
-        /// <summary>
-        /// Testing only endpoint. Retrieves all favorites.
-        /// </summary>
-        /// <returns>A list of all favorites or empty list if there are no favorites.</returns>
-        //[HttpGet("{all}")]
-        //public IActionResult Get()
-        //{
-        //    var favorites = _context.Favorites.ToList();
-        //    return Ok(favorites);
-        //}
-
         //GET api/<FavoritesController>
         /// <summary>
         /// Retrieves all favorites of the currently authenticated user.
@@ -53,16 +41,23 @@ namespace FullStackAuth_WebAPI.Controllers
         {
         }
 
-        // PUT api/<FavoritesController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
         // DELETE api/<FavoritesController>/5
+        /// <summary>
+        /// Testing only endpoint. Deletes specified favorite by pk.
+        /// </summary>
+        /// <param name="id">Primary Key of Favorite</param>
+        /// <returns>Returns NoContent if the favorite was deleted, NotFound if the favorite was not found</returns>
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
+            var review = _context.Favorites.Where(f => f.Id == id).SingleOrDefault();
+            if (review == null)
+            {
+                return NotFound();
+            }
+            _context.Favorites.Remove(review);
+            _context.SaveChanges();
+            return NoContent();
         }
     }
 }
